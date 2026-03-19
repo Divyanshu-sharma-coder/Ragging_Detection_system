@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ragging Detection Frontend</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --accent: #f59e0b;
+      --text: #e5e7eb;
+      --danger: #ef4444;
+      --ok: #22c55e;
+    }
+
+    body {
+      margin: 0;
+      font-family: Segoe UI, sans-serif;
+      background: linear-gradient(120deg, #0b1020, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .app {
+      max-width: 960px;
+      margin: 0 auto;
+      display: grid;
+      gap: 16px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid #1f2937;
+      border-radius: 14px;
+      padding: 16px;
+    }
+
+    h1 { margin: 0 0 10px; }
+
+    button {
+      background: var(--accent);
+      color: #111827;
+      border: 0;
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+      margin-right: 8px;
+    }
+
+    video, canvas {
+      width: 100%;
+      max-width: 760px;
+      border-radius: 10px;
+      border: 1px solid #374151;
+      background: #000;
+    }
+
+    .hidden { display: none; }
+    .danger { color: var(--danger); font-weight: 700; }
+    .ok { color: var(--ok); font-weight: 700; }
+    .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+    input {
+      background: #0b1222;
+      color: var(--text);
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="panel">
+      <h1>Ragging / Violence Detection</h1>
+      <p>Start webcam detection and send every Nth frame to FastAPI for prediction.</p>
+      <div class="row">
+        <label>API URL</label>
+        <input id="apiUrl" value="http://127.0.0.1:8000/predict" size="40" />
+        <label>Process Every N Frames</label>
+        <input id="nFrames" type="number" min="1" value="12" style="width:100px" />
+      </div>
+      <br />
+      <button id="startBtn">Start Webcam Detection</button>
+      <button id="stopBtn">Stop</button>
+      <p id="status">Idle</p>
+      <p id="predictionText">Prediction: -</p>
+      <p id="warningText"></p>
+    </div>
+
+    <div class="panel">
+      <video id="video" autoplay playsinline muted></video>
+      <canvas id="canvas" class="hidden"></canvas>
+    </div>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>

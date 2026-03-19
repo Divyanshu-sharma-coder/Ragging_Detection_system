@@ -1,0 +1,12 @@
+{
+  "name": "ragging-detection-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Frontend for ragging detection dashboard",
+  "scripts": {
+    "start": "http-server . -p 5500 -c-1"
+  },
+  "dependencies": {
+    "http-server": "^14.1.1"
+  }
+}
