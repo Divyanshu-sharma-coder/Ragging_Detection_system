@@ -28,6 +28,7 @@ const API_BASE = (
 ).replace(/\/$/, "");
 const PREDICTION_INTERVAL_MS = 1300;
 const STRICT_CLIENT_CONFIDENCE = 0.92;
+const MAX_MANUAL_CAMERA_INDEX = 10;
 
 const isNetworkFetchError = (error: unknown) => error instanceof TypeError && /fetch/i.test(error.message);
 
@@ -87,6 +88,8 @@ export function PanelPage() {
   const streamRef = useRef<MediaStream | null>(null);
   const loopRef = useRef<number | null>(null);
   const backendRetryRef = useRef<number | null>(null);
+  const activeCameraIndexRef = useRef<number | null>(null);
+  const captureAndPredictRef = useRef<(() => Promise<void>) | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const backendOnlineRef = useRef(false);
@@ -179,6 +182,7 @@ export function PanelPage() {
     }
 
     backendOnlineRef.current = false;
+    activeCameraIndexRef.current = null;
 
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
@@ -191,6 +195,89 @@ export function PanelPage() {
   }, []);
 
   const selectedDevice = useMemo(() => devices[cameraIndex] ?? null, [devices, cameraIndex]);
+
+  const buildConstraintsForIndex = useCallback(
+    (index: number): MediaStreamConstraints => {
+      const device = devices[index] ?? null;
+      if (!device) {
+        return { video: true, audio: false };
+      }
+
+      return { video: { deviceId: { exact: device.deviceId } }, audio: false };
+    },
+    [devices],
+  );
+
+  const applyCameraStream = useCallback(
+    async (index: number): Promise<string> => {
+      const constraints = buildConstraintsForIndex(index);
+      let stream: MediaStream;
+      let cameraNotice = "";
+
+      try {
+        stream = await navigator.mediaDevices.getUserMedia(constraints);
+      } catch (error) {
+        const hasExplicitDevice = Boolean(devices[index]);
+        if (!hasExplicitDevice) {
+          throw error;
+        }
+
+        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        cameraNotice = "Selected camera index unavailable; switched to default camera.";
+      }
+
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+      }
+
+      streamRef.current = stream;
+
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        await videoRef.current.play();
+      }
+
+      return cameraNotice;
+    },
+    [buildConstraintsForIndex, devices],
+  );
+
+  const startPredictionLoop = useCallback(() => {
+    if (loopRef.current !== null) return;
+
+    loopRef.current = window.setInterval(() => {
+      captureAndPredictRef.current?.().catch(() => undefined);
+    }, PREDICTION_INTERVAL_MS);
+  }, []);
+
+  const startBackendReconnectWatcher = useCallback(
+    (index: number) => {
+      if (backendRetryRef.current !== null) return;
+
+      backendRetryRef.current = window.setInterval(() => {
+        isBackendReachable()
+          .then(async (ok) => {
+            if (!ok || !streamRef.current) return;
+
+            backendOnlineRef.current = true;
+            if (backendRetryRef.current !== null) {
+              window.clearInterval(backendRetryRef.current);
+              backendRetryRef.current = null;
+            }
+
+            const reconnectMessage = await requestBackendActivation(index);
+            setMessage(
+              `Camera active on index ${index}. Backend reconnected. ${reconnectMessage}`,
+            );
+
+            startPredictionLoop();
+            await captureAndPredictRef.current?.();
+          })
+          .catch(() => undefined);
+      }, 3000);
+    },
+    [isBackendReachable, requestBackendActivation, startPredictionLoop],
+  );
 
   const captureAndPredict = useCallback(async () => {
     if (!backendOnlineRef.current) return;
@@ -258,11 +345,16 @@ export function PanelPage() {
           loopRef.current = null;
         }
         setMessage(`Backend disconnected at ${API_BASE}. Camera is still active. Waiting to reconnect backend...`);
+        startBackendReconnectWatcher(activeCameraIndexRef.current ?? cameraIndex);
       } else {
         setMessage(`Prediction failed: ${(error as Error).message}`);
       }
     }
-  }, [pct]);
+  }, [cameraIndex, pct, startBackendReconnectWatcher]);
+
+  useEffect(() => {
+    captureAndPredictRef.current = captureAndPredict;
+  }, [captureAndPredict]);
 
   const activate = async () => {
     if (isActive) return;
@@ -276,31 +368,8 @@ export function PanelPage() {
       }
 
       stopCapture();
-
-      const constraints: MediaStreamConstraints = selectedDevice
-        ? { video: { deviceId: { exact: selectedDevice.deviceId } }, audio: false }
-        : { video: true, audio: false };
-
-      let stream: MediaStream;
-      let cameraNotice = "";
-
-      try {
-        stream = await navigator.mediaDevices.getUserMedia(constraints);
-      } catch (error) {
-        if (!selectedDevice) {
-          throw error;
-        }
-
-        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-        cameraNotice = "Selected camera index unavailable; switched to default camera.";
-      }
-
-      streamRef.current = stream;
-
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        await videoRef.current.play();
-      }
+      const cameraNotice = await applyCameraStream(cameraIndex);
+      activeCameraIndexRef.current = cameraIndex;
 
       setIsActive(true);
       const backendReachable = await isBackendReachable();
@@ -314,35 +383,10 @@ export function PanelPage() {
       );
 
       if (backendReachable) {
-        loopRef.current = window.setInterval(() => {
-          captureAndPredict().catch(() => undefined);
-        }, PREDICTION_INTERVAL_MS);
+        startPredictionLoop();
         await captureAndPredict();
       } else {
-        backendRetryRef.current = window.setInterval(() => {
-          isBackendReachable()
-            .then(async (ok) => {
-              if (!ok || !streamRef.current) return;
-
-              backendOnlineRef.current = true;
-              if (backendRetryRef.current !== null) {
-                window.clearInterval(backendRetryRef.current);
-                backendRetryRef.current = null;
-              }
-
-              const reconnectMessage = await requestBackendActivation(cameraIndex);
-              setMessage(
-                `Camera active on index ${cameraIndex}. Backend reconnected. ${reconnectMessage}`,
-              );
-
-              if (loopRef.current === null) {
-                loopRef.current = window.setInterval(() => {
-                  captureAndPredict().catch(() => undefined);
-                }, PREDICTION_INTERVAL_MS);
-              }
-            })
-            .catch(() => undefined);
-        }, 3000);
+        startBackendReconnectWatcher(cameraIndex);
       }
     } catch (error) {
       stopCapture();
@@ -352,6 +396,71 @@ export function PanelPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!isActive) return;
+    if (activeCameraIndexRef.current === null || activeCameraIndexRef.current === cameraIndex) return;
+
+    let cancelled = false;
+
+    const switchCamera = async () => {
+      setLoading(true);
+      setMessage(`Switching to camera index ${cameraIndex}...`);
+
+      try {
+        const notice = await applyCameraStream(cameraIndex);
+        activeCameraIndexRef.current = cameraIndex;
+
+        const backendReachable = await isBackendReachable();
+        backendOnlineRef.current = backendReachable;
+
+        if (backendReachable) {
+          const backendMessage = await requestBackendActivation(cameraIndex);
+          startPredictionLoop();
+          await captureAndPredict();
+          if (!cancelled) {
+            setMessage(
+              `Camera switched to index ${cameraIndex}. ${notice} ${backendMessage}`.trim(),
+            );
+          }
+        } else {
+          if (loopRef.current !== null) {
+            window.clearInterval(loopRef.current);
+            loopRef.current = null;
+          }
+          if (!cancelled) {
+            setMessage(
+              `Camera switched to index ${cameraIndex}. Backend offline at ${API_BASE}; waiting to reconnect for predictions.`,
+            );
+          }
+          startBackendReconnectWatcher(cameraIndex);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setMessage(`Failed to switch camera: ${readActivationError(error)}`);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    switchCamera().catch(() => undefined);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    applyCameraStream,
+    cameraIndex,
+    captureAndPredict,
+    isActive,
+    isBackendReachable,
+    requestBackendActivation,
+    startBackendReconnectWatcher,
+    startPredictionLoop,
+  ]);
 
   const deactivate = useCallback(() => {
     const run = async () => {
@@ -378,7 +487,7 @@ export function PanelPage() {
 
   const latest = predictions[0] ?? null;
   const alertMode = latest?.strict_label === "Ragging";
-  const maxCameraIndex = Math.max(0, devices.length - 1);
+  const maxCameraIndex = MAX_MANUAL_CAMERA_INDEX;
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-8 pt-24">
