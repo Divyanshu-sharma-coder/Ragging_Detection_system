@@ -1,74 +1,12 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Ragging Detection Control Panel</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/styles.css" />
-</head>
-<body>
-  <main class="shell">
-    <section class="hero">
-      <p class="eyebrow">Campus Safety Intelligence</p>
-      <h1>Real-Time Ragging Detection</h1>
-      <p class="sub">Click the control below to activate automated camera inference with FastAPI, OpenCV, and your trained model. For the enhanced experience, open the Streamlit dashboard on port 8501.</p>
-      <button id="toggleBtn" class="activate">ACTIVATE THE SYSTEM</button>
-      <p id="systemMsg" class="msg">System is idle.</p>
-    </section>
-
-    <section class="grid">
-      <article class="card">
-        <h2>Live Status</h2>
-        <div class="stats">
-          <p><span>Backend:</span> <strong id="statusActive">Stopped</strong></p>
-          <p><span>Camera:</span> <strong id="statusCamera">Closed</strong></p>
-          <p><span>Label:</span> <strong id="statusLabel">-</strong></p>
-          <p><span>Confidence:</span> <strong id="statusConfidence">-</strong></p>
-          <p><span>Ragging Prob:</span> <strong id="statusRaggingProb">-</strong></p>
-        </div>
-      </article>
-
-      <article class="card">
-        <h2>Recent Predictions</h2>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Time (UTC)</th>
-                <th>Label</th>
-                <th>Confidence</th>
-                <th>Ragging Prob.</th>
-              </tr>
-            </thead>
-            <tbody id="historyBody"></tbody>
-          </table>
-        </div>
-      </article>
-
-      <article class="card card-wide">
-        <h2>Browser Webcam Detection</h2>
-        <p class="helper">This mode captures your browser webcam and sends every Nth frame to <strong>/api/predict</strong>.</p>
-        <div class="controls-row">
-          <label for="apiUrl">API URL</label>
-          <input id="apiUrl" type="text" value="http://127.0.0.1:8000/api/predict" />
-          <label for="nFrames">Process Every N Frames</label>
-          <input id="nFrames" type="number" min="1" value="12" />
-        </div>
-        <div class="controls-row">
-          <button id="startWebcamBtn" class="activate">START WEBCAM DETECTION</button>
-          <button id="stopWebcamBtn" class="neutral">STOP</button>
-          <span id="webcamStatus" class="helper">Webcam idle.</span>
-        </div>
-        <p id="webcamPrediction" class="helper">Prediction: -</p>
-        <p id="webcamWarning" class="warn hidden">Ragging Detected</p>
-        <video id="video" autoplay playsinline muted></video>
-        <canvas id="canvas" class="hidden"></canvas>
-      </article>
-    </section>
-  </main>
-  <script src="/frontend-assets/app.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Eye Detection System</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>

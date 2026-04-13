@@ -10,6 +10,6 @@ FRAME_INTERVAL_SECONDS = float(os.getenv("FRAME_INTERVAL_SECONDS", "1.0"))
 # Keep class names aligned with training directory names.
 CLASS_NAMES = [name.strip() for name in os.getenv("CLASS_NAMES", "Normal,Ragging").split(",") if name.strip()]
 IMG_SIZE = int(os.getenv("IMG_SIZE", "224"))
-SMOOTHING_WINDOW = int(os.getenv("SMOOTHING_WINDOW", "5"))
-RAGGING_THRESHOLD = float(os.getenv("RAGGING_THRESHOLD", "0.75"))
-MIN_CONFIDENCE = float(os.getenv("MIN_CONFIDENCE", "0.55"))
+SMOOTHING_WINDOW = int(os.getenv("SMOOTHING_WINDOW", "7"))
+RAGGING_THRESHOLD = float(os.getenv("RAGGING_THRESHOLD", "0.9"))
+MIN_CONFIDENCE = float(os.getenv("MIN_CONFIDENCE", "0.8"))

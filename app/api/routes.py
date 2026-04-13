@@ -1,6 +1,6 @@
 from fastapi import APIRouter, File, HTTPException, Query, UploadFile
 
-from app.schemas import PredictionRecord, SystemStatus
+from app.schemas import AuthResponse, PredictResponse, PredictionRecord, SignInPayload, SignUpPayload, SocialAuthPayload, SystemStatus
 from app.state import camera_service, model_service, repository
 
 router = APIRouter(prefix="/api", tags=["ragging-detection"])
@@ -12,7 +12,7 @@ def health() -> dict:
     return {"ok": True}
 
 
-@router.post("/predict")
+@router.post("/predict", response_model=PredictResponse)
 async def predict(image: UploadFile = File(...)) -> dict:
     if not image.content_type or not image.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Only image files are allowed.")
@@ -34,6 +34,88 @@ async def predict(image: UploadFile = File(...)) -> dict:
     return {
         "prediction": result["label"],
         "confidence": result["confidence"],
+        "ragging_probability": result["ragging_probability"],
+        "top_label": result["top_label"],
+        "top_confidence": result["top_confidence"],
+        "threshold_ragging": model_service.ragging_threshold,
+        "threshold_min_confidence": model_service.min_confidence,
+    }
+
+
+@router.post("/auth/signup", response_model=AuthResponse)
+def signup(payload: SignUpPayload) -> dict:
+    name = payload.name.strip()
+    email = payload.email.strip().lower()
+    password = payload.password
+
+    if len(name) < 2:
+        raise HTTPException(status_code=400, detail="Name must be at least 2 characters.")
+    if "@" not in email or "." not in email.split("@")[-1]:
+        raise HTTPException(status_code=400, detail="Please enter a valid email address.")
+    if len(password) < 8:
+        raise HTTPException(status_code=400, detail="Password must be at least 8 characters.")
+
+    try:
+        user = repository.create_user(name=name, email=email, password=password)
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+    return {
+        "message": "Account created successfully.",
+        "user": {
+            "id": user["id"],
+            "name": user["name"],
+            "email": user["email"],
+            "auth_provider": user["auth_provider"],
+        },
+    }
+
+
+@router.post("/auth/login", response_model=AuthResponse)
+def login(payload: SignInPayload) -> dict:
+    email = payload.email.strip().lower()
+    password = payload.password
+
+    if not email or not password:
+        raise HTTPException(status_code=400, detail="Email and password are required.")
+
+    user = repository.verify_user(email=email, password=password)
+    if user is None:
+        raise HTTPException(status_code=401, detail="Invalid credentials. Please try again.")
+
+    return {
+        "message": "Sign in successful.",
+        "user": {
+            "id": user["id"],
+            "name": user["name"],
+            "email": user["email"],
+            "auth_provider": user["auth_provider"],
+        },
+    }
+
+
+@router.post("/auth/social", response_model=AuthResponse)
+def social_auth(payload: SocialAuthPayload) -> dict:
+    provider = payload.provider.strip().lower()
+    if provider not in {"google", "github"}:
+        raise HTTPException(status_code=400, detail="Unsupported provider.")
+
+    email = payload.email.strip().lower()
+    name = payload.name.strip() or f"{provider.title()} User"
+    if not email:
+        raise HTTPException(status_code=400, detail="Email is required for social sign-in.")
+
+    user, created = repository.social_login(provider=provider, email=email, name=name)
+    action = "created and signed in" if created else "signed in"
+
+    return {
+        "message": f"Account {action} with {provider.title()}.",
+        "user": {
+            "id": user["id"],
+            "name": user["name"],
+            "email": user["email"],
+            "auth_provider": user["auth_provider"],
+        },
     }
 
 
