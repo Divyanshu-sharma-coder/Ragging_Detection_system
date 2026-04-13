@@ -3,7 +3,7 @@ setlocal
 
 cd /d "%~dp0"
 
-set "PY310=C:/Users/hp/AppData/Local/Python/pythoncore-3.10-64/python.exe"
+set "PY310=C:\Users\hp\AppData\Local\Python\pythoncore-3.10-64\python.exe"
 
 if not exist "%PY310%" (
     echo Python 3.10.11 interpreter not found at:
@@ -32,12 +32,28 @@ if errorlevel 1 (
 cd ..
 
 echo Starting FastAPI backend...
-start "Ragging Backend" cmd /k "cd /d %~dp0 && ""%PY310%"" -m uvicorn main:app --host 127.0.0.1 --port 8000"
+start "Ragging Backend" /B cmd /c "cd /d %~dp0 & ""%PY310%"" -m uvicorn main:app --host 127.0.0.1 --port 8000 > ""%~dp0backend.log"" 2>&1"
 
-timeout /t 10 /nobreak >nul
+echo Waiting for backend health check...
+set "BACKEND_READY=0"
+for /l %%I in (1,1,45) do (
+    powershell -NoProfile -Command "try { $r = Invoke-WebRequest -UseBasicParsing http://127.0.0.1:8000/api/health -TimeoutSec 2; if ($r.StatusCode -eq 200) { Write-Output READY } } catch {}" | findstr /I "READY" >nul
+    if not errorlevel 1 (
+        set "BACKEND_READY=1"
+        goto :backend_ready
+    )
+    timeout /t 1 /nobreak >nul
+)
+
+:backend_ready
+if "%BACKEND_READY%"=="1" (
+    echo Backend is healthy at http://127.0.0.1:8000
+) else (
+    echo Backend did not report healthy within 45 seconds. Frontend will still start.
+)
 
 echo Starting React Vite frontend...
-start "Smart Eye Frontend" cmd /k "cd /d %~dp0frontend && npm run dev -- --host 127.0.0.1 --port 5173"
+start "Smart Eye Frontend" cmd /k "cd /d %~dp0frontend & set VITE_API_BASE_URL=http://127.0.0.1:8000 & npm run dev -- --host 127.0.0.1 --port 5173"
 
 timeout /t 2 /nobreak >nul
 

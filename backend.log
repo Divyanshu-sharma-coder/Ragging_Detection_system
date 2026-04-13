@@ -1,0 +1,9 @@
+2026-04-13 17:15:51.841116: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2026-04-13 17:15:53.515449: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+INFO:     Started server process [3160]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:49289 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60255 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60562 - "GET /api/health HTTP/1.1" 200 OK

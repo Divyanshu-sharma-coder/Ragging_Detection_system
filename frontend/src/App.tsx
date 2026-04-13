@@ -8,7 +8,7 @@ import { AuthPage } from "./pages/AuthPage";
 
 function AppFrame() {
   const location = useLocation();
-  const hideNavbar = ["/", "/auth", "/login", "/signup"].includes(location.pathname);
+  const hideNavbar = ["/"].includes(location.pathname);
 
   return (
     <>

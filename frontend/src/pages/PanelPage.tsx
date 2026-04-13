@@ -31,6 +31,39 @@ const STRICT_CLIENT_CONFIDENCE = 0.92;
 
 const isNetworkFetchError = (error: unknown) => error instanceof TypeError && /fetch/i.test(error.message);
 
+const readActivationError = (error: unknown): string => {
+  if (error instanceof DOMException) {
+    if (error.name === "NotAllowedError") {
+      return "Camera permission denied. Allow camera access in your browser and try again.";
+    }
+    if (error.name === "NotFoundError") {
+      return "No camera device found. Connect a camera and try again.";
+    }
+    if (error.name === "NotReadableError") {
+      return "Camera is busy in another app. Close other camera apps and try again.";
+    }
+    if (error.name === "OverconstrainedError") {
+      return "Selected camera is unavailable. Try a different camera index.";
+    }
+    if (error.name === "SecurityError") {
+      return "Browser blocked camera access. Open the app on localhost and allow camera permission.";
+    }
+    if (error.message?.trim()) {
+      return error.message;
+    }
+  }
+
+  if (error instanceof Error && error.message?.trim()) {
+    return error.message;
+  }
+
+  if (typeof error === "string" && error.trim()) {
+    return error;
+  }
+
+  return "Unable to start camera. Check permission and camera availability, then try again.";
+};
+
 const readErrorMessage = async (res: Response): Promise<string> => {
   try {
     const payload = await res.json();
@@ -53,18 +86,22 @@ export function PanelPage() {
 
   const streamRef = useRef<MediaStream | null>(null);
   const loopRef = useRef<number | null>(null);
+  const backendRetryRef = useRef<number | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const backendOnlineRef = useRef(false);
 
   const pct = useCallback((value: number | undefined) => {
     if (value === undefined) return "-";
     return `${(value * 100).toFixed(2)}%`;
   }, []);
 
-  const ensureBackendOnline = useCallback(async () => {
-    const health = await fetch(`${API_BASE}/api/health`);
-    if (!health.ok) {
-      throw new Error(`Backend health check failed (${health.status}).`);
+  const isBackendReachable = useCallback(async () => {
+    try {
+      const health = await fetch(`${API_BASE}/api/health`);
+      return health.ok;
+    } catch {
+      return false;
     }
   }, []);
 
@@ -136,6 +173,13 @@ export function PanelPage() {
       loopRef.current = null;
     }
 
+    if (backendRetryRef.current !== null) {
+      window.clearInterval(backendRetryRef.current);
+      backendRetryRef.current = null;
+    }
+
+    backendOnlineRef.current = false;
+
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
       streamRef.current = null;
@@ -149,6 +193,8 @@ export function PanelPage() {
   const selectedDevice = useMemo(() => devices[cameraIndex] ?? null, [devices, cameraIndex]);
 
   const captureAndPredict = useCallback(async () => {
+    if (!backendOnlineRef.current) return;
+
     const video = videoRef.current;
     const canvas = canvasRef.current;
     if (!video || !canvas || !streamRef.current) return;
@@ -206,7 +252,12 @@ export function PanelPage() {
       );
     } catch (error) {
       if (isNetworkFetchError(error)) {
-        setMessage(`Prediction failed: Cannot reach backend at ${API_BASE}. Start backend on port 8000.`);
+        backendOnlineRef.current = false;
+        if (loopRef.current !== null) {
+          window.clearInterval(loopRef.current);
+          loopRef.current = null;
+        }
+        setMessage(`Backend disconnected at ${API_BASE}. Camera is still active. Waiting to reconnect backend...`);
       } else {
         setMessage(`Prediction failed: ${(error as Error).message}`);
       }
@@ -217,17 +268,33 @@ export function PanelPage() {
     if (isActive) return;
 
     setLoading(true);
-    setMessage("Checking backend and activating camera...");
+    setMessage("Activating camera and detection loop...");
 
     try {
-      await ensureBackendOnline();
+      if (!navigator.mediaDevices?.getUserMedia) {
+        throw new Error("This browser does not support camera access.");
+      }
+
       stopCapture();
 
       const constraints: MediaStreamConstraints = selectedDevice
         ? { video: { deviceId: { exact: selectedDevice.deviceId } }, audio: false }
         : { video: true, audio: false };
 
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      let stream: MediaStream;
+      let cameraNotice = "";
+
+      try {
+        stream = await navigator.mediaDevices.getUserMedia(constraints);
+      } catch (error) {
+        if (!selectedDevice) {
+          throw error;
+        }
+
+        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        cameraNotice = "Selected camera index unavailable; switched to default camera.";
+      }
+
       streamRef.current = stream;
 
       if (videoRef.current) {
@@ -236,24 +303,51 @@ export function PanelPage() {
       }
 
       setIsActive(true);
-      const backendMessage = await requestBackendActivation(cameraIndex);
+      const backendReachable = await isBackendReachable();
+      backendOnlineRef.current = backendReachable;
+
+      const backendMessage = backendReachable
+        ? await requestBackendActivation(cameraIndex)
+        : `Backend offline at ${API_BASE}. Camera started locally; run start-all.bat to enable predictions.`;
       setMessage(
-        `Camera active on index ${cameraIndex}. Capturing every ${(PREDICTION_INTERVAL_MS / 1000).toFixed(1)}s. ${backendMessage}`,
+        `Camera active on index ${cameraIndex}. Capturing every ${(PREDICTION_INTERVAL_MS / 1000).toFixed(1)}s. ${cameraNotice} ${backendMessage}`.trim(),
       );
 
-      loopRef.current = window.setInterval(() => {
-        captureAndPredict().catch(() => undefined);
-      }, PREDICTION_INTERVAL_MS);
+      if (backendReachable) {
+        loopRef.current = window.setInterval(() => {
+          captureAndPredict().catch(() => undefined);
+        }, PREDICTION_INTERVAL_MS);
+        await captureAndPredict();
+      } else {
+        backendRetryRef.current = window.setInterval(() => {
+          isBackendReachable()
+            .then(async (ok) => {
+              if (!ok || !streamRef.current) return;
 
-      await captureAndPredict();
+              backendOnlineRef.current = true;
+              if (backendRetryRef.current !== null) {
+                window.clearInterval(backendRetryRef.current);
+                backendRetryRef.current = null;
+              }
+
+              const reconnectMessage = await requestBackendActivation(cameraIndex);
+              setMessage(
+                `Camera active on index ${cameraIndex}. Backend reconnected. ${reconnectMessage}`,
+              );
+
+              if (loopRef.current === null) {
+                loopRef.current = window.setInterval(() => {
+                  captureAndPredict().catch(() => undefined);
+                }, PREDICTION_INTERVAL_MS);
+              }
+            })
+            .catch(() => undefined);
+        }, 3000);
+      }
     } catch (error) {
       stopCapture();
       setIsActive(false);
-      if (isNetworkFetchError(error)) {
-        setMessage(`Activation failed: backend is unreachable at ${API_BASE}. Start backend first (for example via start-all.bat).`);
-      } else {
-        setMessage(`Activation failed: ${(error as Error).message}`);
-      }
+      setMessage(`Activation failed: ${readActivationError(error)}`);
     } finally {
       setLoading(false);
     }

@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Chrome, Eye, EyeOff, Github } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
+import authLeftImage from "@/assets/auth-left.jpg";
+
 type AuthMode = "signin" | "signup";
 
 type SignInPayload = {
@@ -176,16 +178,11 @@ export function AuthPage() {
             </p>
           </div>
 
-          <div className="relative z-10 mt-8 grid grid-cols-2 gap-4">
+          <div className="relative z-10 mt-8 overflow-hidden rounded-2xl border border-cyan-300/30 shadow-2xl">
             <img
-              src="https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=900&q=80"
-              alt="Retro game console in pixel style"
-              className="h-36 w-full rounded-xl border border-cyan-300/30 object-cover shadow-lg [image-rendering:pixelated]"
-            />
-            <img
-              src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=900&q=80"
-              alt="Arcade-inspired pixel lighting"
-              className="h-36 w-full rounded-xl border border-cyan-300/30 object-cover shadow-lg [image-rendering:pixelated]"
+              src={authLeftImage}
+              alt="Smart Eye auth panel artwork"
+              className="h-72 w-full object-cover object-center [image-rendering:pixelated]"
             />
           </div>
         </aside>
