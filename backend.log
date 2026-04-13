@@ -7,3 +7,132 @@ INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 INFO:     127.0.0.1:49289 - "GET /api/health HTTP/1.1" 200 OK
 INFO:     127.0.0.1:60255 - "GET /api/health HTTP/1.1" 200 OK
 INFO:     127.0.0.1:60562 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57278 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55779 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64145 - "GET /api/health HTTP/1.1" 200 OK
+2026-04-13 17:23:08.261138: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: SSE3 SSE4.1 SSE4.2 AVX AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING:absl:Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+INFO:     127.0.0.1:64145 - "POST /api/system/activate?camera_index=0 HTTP/1.1" 200 OK
+[ WARN:0@440.602] global cap_msmf.cpp:476 `anonymous-namespace'::SourceReaderCB::OnReadSample videoio(MSMF): OnReadSample() is called with error status: -1072875772
+[ WARN:0@440.604] global cap_msmf.cpp:488 `anonymous-namespace'::SourceReaderCB::OnReadSample videoio(MSMF): async ReadSample() call is failed with error status: -1072875772
+[ WARN:1@440.604] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+[ WARN:1@441.614] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+[ WARN:1@442.615] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:64145 - "POST /api/predict HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56143 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@443.617] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@444.630] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@445.645] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@446.664] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@447.675] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@448.680] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+[ WARN:1@449.681] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@450.695] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@451.697] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@452.697] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+[ WARN:1@453.713] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@454.713] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@455.729] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@456.744] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@457.760] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+[ WARN:1@458.776] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@459.777] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@460.778] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@461.793] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+[ WARN:1@462.796] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@463.798] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@464.811] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@465.812] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@466.827] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+[ WARN:1@467.828] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@468.842] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@469.845] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@470.860] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+[ WARN:1@471.876] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@472.891] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@473.893] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@474.893] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@475.909] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+[ WARN:1@476.927] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@477.942] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@478.943] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@479.943] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+[ WARN:1@480.958] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@481.960] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@482.961] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@483.976] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@484.979] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+[ WARN:1@485.991] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@486.992] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@488.008] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@489.023] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+[ WARN:1@490.026] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@491.038] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@492.042] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@493.058] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@494.058] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+[ WARN:1@495.073] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@496.074] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@497.074] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@498.088] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+[ WARN:1@499.089] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@500.090] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@501.092] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@502.106] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+[ WARN:1@503.107] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@504.122] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@505.138] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@506.139] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/predict HTTP/1.1" 200 OK
+[ WARN:1@507.140] global cap_msmf.cpp:1795 CvCapture_MSMF::grabFrame videoio(MSMF): can't grab frame. Error: -1072875772
+INFO:     127.0.0.1:50424 - "POST /api/system/deactivate HTTP/1.1" 200 OK
