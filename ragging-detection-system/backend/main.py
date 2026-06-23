@@ -25,6 +25,9 @@ app.add_middleware(
 
 @app.on_event("startup")
 def startup_event() -> None:
+    """
+    startupEvent doc-string
+    """
     if not MODEL_PATH.exists():
         raise RuntimeError(f"Model file not found at {MODEL_PATH}")
     predictor.load()
