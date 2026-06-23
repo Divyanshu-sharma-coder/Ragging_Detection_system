@@ -1,6 +1,6 @@
 # Ragging Detection System by Divyanshu
 
-This project now uses a complete React + Vite + TypeScript frontend with Tailwind and shadcn-style component structure, plus a FastAPI backend for inference.
+This project now uses a complete React + Vite + TypeScript frontend with Tailwind and shadcn-style component structure, plus a FastAPI backend for inference. used to detect ragging
 
 ## Stack
 
